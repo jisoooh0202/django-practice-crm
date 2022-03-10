@@ -24,3 +24,11 @@ class AgentCreateView(LoginRequiredMixin, generic.CreateView):
 		agent.organisation = self.request.user.userprofile
 		agent.save()
 		return super(AgentCreateView, self).form_valid(form)
+
+
+class AgentDetailView(LoginRequiredMixin, generic.DetailView):
+	template_name = "agent_detail.html"
+	context_object_name = "agent"
+
+	def get_queryset(self):
+		return Agent.objects.all()
