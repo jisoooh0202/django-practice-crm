@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.views import generic
 from agents.mixins import OrganisorAndLoginRequiredMixin
 from .models import Lead, Agent
-from .forms import LeadForm, LeadModelForm, CustomUserCreationForm
+from .forms import LeadForm, LeadModelForm, CustomUserCreationForm, AssignAgentForm
 
 
 # CRUD+L - Create, Retrieve(Detail), Update and Delete + List
@@ -214,3 +214,25 @@ def lead_delete(request, pk):
 	lead = Lead.objects.get(id=pk)
 	lead.delete()
 	return redirect("/leads")
+
+
+class AssignAgentView(OrganisorAndLoginRequiredMixin, generic.FormView):
+	template_name = "assign_agent.html"
+	form_class = AssignAgentForm
+
+	def get_form_kwargs(self, **kwargs):
+		kwargs = super(AssignAgentView, self).get_form_kwargs(**kwargs)
+		kwargs.update({
+			"request": self.request
+		})
+		return kwargs
+
+	def get_success_url(self):
+		return reverse("leads:lead-list")
+
+	def form_valid(self, form):
+		agent = form.cleaned_data["agent"]
+		lead = Lead.objects.get(id=self.kwargs["pk"])
+		lead.agent = agent
+		lead.save()
+		return super(AssignAgentView, self).form_valid(form)
