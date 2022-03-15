@@ -57,7 +57,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
 				agent__isnull=True
 			)
 			context.update({
-			"unassigned_leads": queryset
+				"unassigned_leads": queryset
 			})
 		return context		
 
