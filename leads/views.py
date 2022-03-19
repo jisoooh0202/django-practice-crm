@@ -254,6 +254,7 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
 			queryset = Lead.objects.filter(
 				organisation=user.agent.organisation
 			)
+		return context
 
 		context.update({
 			"unassigned_lead_count": queryset.filter(category__isnull=True).count()
@@ -270,4 +271,22 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
 			queryset = Category.objects.filter(
 				organisation=user.agent.organisation
 			)
+		return queryset
+
+
+class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
+	template_name = "category_detail.html"
+	context_object_name = "category"
+
+
+	def get_queryset(self):
+		user = self.request.user
+		if user.is_organisor:
+			queryset = Category.objects.filter(
+				organisation=user.userprofile
+				)
+		else:
+			queryset = Category.objects.filter(
+				organisation=user.agent.organisation
+				)
 		return queryset
